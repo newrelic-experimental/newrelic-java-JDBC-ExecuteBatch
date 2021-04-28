@@ -1,41 +1,47 @@
 [![New Relic Experimental header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Experimental.png)](https://opensource.newrelic.com/oss-category/#new-relic-experimental)
 
-# [Project Name - use format "newrelic-java-<name>"] [build badges go here when available]
+# New Relic Java Instrumentation for JDBC executeBatch
 
->[Brief description - what is the project and value does it provide? How often should users expect to get releases? How is versioning set up? Where does this project want to go?]
+Provides instrumentation for tracking the executeBatch method of the Statement, PreparedStatement and CallableStatement interfaces as a database call.
 
 ## Installation
+Due to API calls made by the instrumentation, use of this extension requires New Relic Java Agent version 6.1.0 or later.
 
-> [Include a step-by-step procedure on how to get your code installed. Be sure to include any third-party dependencies that need to be installed separately]
-
+To install:   
+1. Download the latest release jar files.    
+2. In the New Relic Java directory (the one containing newrelic.jar), create a directory named extensions if it does not already exist.   
+3. Copy the downloaded jars into the extensions directory.   
+4. Restart the application.   
 ## Getting Started
 
->[Simple steps to start working with the software similar to a "Hello World"]
+Once deployed the instrumentation will start to track the call to the executeBatch method as a database call.  It will show information related to the call in distributed traces.   
+   
+In particular, in the Performance tab for the call it will show the query as "Batch Execute n Queries" where n is the number of queries executed as part of the batch.   For calls to addBatch(String sql), it will represent the number of calls to this method before the executeBatch method is executed.  For PreparedStatment and CallableStatment it will represent the number of times that addBatch() is called.
+   
+![image](https://user-images.githubusercontent.com/8822859/116466509-2eb03e00-a834-11eb-963c-14c511957517.png)
 
-## Usage
+In the Attributes tab, it will show the obfuscated queries that were added to the batch.   For the Statment interface, it will show each query added by a call to addBatch(String sql).   For PreparedStatement and CallableStatement it will show the query used to construct the instance.
+   
+![image](https://user-images.githubusercontent.com/8822859/116467343-302e3600-a835-11eb-8912-9fbcc83d08c7.png)
 
->[**Optional** - Include more thorough instructions on how to use the software. This section might not be needed if the Getting Started section is enough. Remove this section if it's not needed.]
 
 ## Building
 
->[**Optional** - Include this section if users will need to follow specific instructions to build the software from source. Be sure to include any third party build dependencies that need to be installed separately. Remove this section if it's not needed.]
-
-## Testing
-
->[**Optional** - Include instructions on how to run tests if we include tests with the codebase. Remove this section if it's not needed.]
+To build the extension jars from source, follow these steps:
+### Build single extension
+To build a single extension with name *extension*, do the following:
+1. Set an environment variable *NEW_RELIC_EXTENSIONS_DIR* and set its value to the directory where you want the jar file built.
+2. Run the command: gradlew *extension*:clean *extension*:install
+### Build all extensions
+To build all extensions, do the following:
+1. Set an environment variable *NEW_RELIC_EXTENSIONS_DIR* and set its value to the directory where you want the jar file built.
+2. Run the command: gradlew clean install
 
 ## Support
 
 New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
 
->[Choose 1 of the 2 options below for Support details, and remove the other one.]
-
->[Option 1 - no specific thread in Community]
->We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
-
->[Option 2 - thread in Community]
->New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorers Hub.
->You can find this project's topic/threads here: [URL for Community thread]
+We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
 
 ## Contributing
 
