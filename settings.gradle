@@ -4,7 +4,8 @@ plugins {
 git {
     fetch 'https://github.com/newrelic/newrelic-java-agent.git', {
         dir "$rootDir/newrelic-agent/"
-        tag 'v6.0.0'
+        tag 'v6.1.0'
     }
 }
 rootProject.name = 'java-instrumentation-template'
+include 'jdbc-executeBatch'
