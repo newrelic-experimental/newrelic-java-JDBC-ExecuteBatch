@@ -44,6 +44,12 @@ public abstract class Statement_instrumentation {
 			DBUtils.clearBatchQueries(hash);
 		}
 		NewRelic.getAgent().getTracedMethod().reportAsExternal(params);
+		if(DBUtils.isPrepared(this)) {
+			String query = DBUtils.getPreparedQuery(hash);
+			if(query != null && !query.isEmpty()) {
+				DBUtils.addBatchQuery(hash, query);
+			}
+		}
 		return result;
 	}
 	

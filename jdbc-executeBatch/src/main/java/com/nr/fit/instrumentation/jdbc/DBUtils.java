@@ -2,6 +2,7 @@ package com.nr.fit.instrumentation.jdbc;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +66,10 @@ public class DBUtils {
 		return obfuscated;
 	}
 
+	public static boolean isPrepared(Object obj) {
+		return obj instanceof PreparedStatement;
+	}
+	
 	public static String getVendor(Connection connection) {
 
 		String dbVendor = null;
