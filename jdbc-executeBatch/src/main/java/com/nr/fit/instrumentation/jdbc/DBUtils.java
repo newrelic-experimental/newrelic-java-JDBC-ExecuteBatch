@@ -11,8 +11,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.newrelic.api.agent.NewRelic;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DBUtils {
+
+	public static final CollectionAndOperation DEFAULT_COLLECTION_AND_OPERATION =
+			new CollectionAndOperation("Batch", "execute");
+	public static final Pattern PATTERN = Pattern.compile(
+			"(?:(?:(SELECT|INSERT|DELETE)\\s+.*(?:FROM|INTO)))\\s+([A-Z][A-Z0-9_]*)",
+			Pattern.CASE_INSENSITIVE + Pattern.DOTALL);
 
 	private static HashMap<Integer, List<String>> batchQueries = new HashMap<Integer, List<String>>();
 	private static HashMap<Integer, String> preparedQueries = new HashMap<Integer, String>();
@@ -84,10 +92,50 @@ public class DBUtils {
 		} catch (SQLException e) {
 		}
 
+		if ("PostgreSQL".equals(dbVendor)) {
+			return "Postgres";
+		}
 		return dbVendor != null ? dbVendor : "Unknown";
 
 	}
-	
+
+	public static CollectionAndOperation parse(String statement) {
+		if (statement.startsWith("/*")) {
+			int index = statement.indexOf("*/");
+			if (index != -1) {
+				return new CollectionAndOperation(statement.substring(2, index).trim(), "batch");
+			}
+		}
+		Matcher matcher = PATTERN.matcher(emptyParentheticals(statement)).useAnchoringBounds(false);
+		if (matcher.find(0)) {
+			return new CollectionAndOperation(matcher.group(2), matcher.group(1).toLowerCase());
+		}
+
+		return DEFAULT_COLLECTION_AND_OPERATION;
+	}
+
+	/**
+	 * Remove the contents of all parentheticals - counting parens and ignoring nested parens
+	 */
+	public static String emptyParentheticals(String statement) {
+		StringBuilder sb = new StringBuilder();
+		int inParens = 0;
+		for (char ch : statement.toCharArray()) {
+			if (inParens == 0) {
+				sb.append(ch);
+			}
+			if (ch == '(') {
+				inParens++;
+			} else if (ch == ')') {
+				inParens--;
+				if (inParens == 0) {
+					sb.append(ch);
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 	private static class Check implements Runnable {
 
 		@Override

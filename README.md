@@ -1,3 +1,9 @@
+## Kenect fork differences - why we forked it
+
+- Change database from PostgreSQL to Postgres to match non-bulk statements in NewRelic
+- Parse the SQL and set the collection and operation for bulk statements pretty much the way NewRelic appears to for non-bulk statements
+- If a statement starts with a /*...*/ comment, use its content as the collection name for the data sent to NewRelic
+
 [![New Relic Experimental header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Experimental.png)](https://opensource.newrelic.com/oss-category/#new-relic-experimental)
 
 # New Relic Java Instrumentation for JDBC executeBatch

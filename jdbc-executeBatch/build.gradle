@@ -9,9 +9,13 @@ dependencies {
    // implementation 'javax.servlet:servlet-api:2.5'
 
    // New Relic Java Agent dependencies
-   implementation 'com.newrelic.agent.java:newrelic-agent:6.1.0'
-   implementation 'com.newrelic.agent.java:newrelic-api:6.1.0'
+   implementation 'com.newrelic.agent.java:newrelic-agent:7.7.0'
+   implementation 'com.newrelic.agent.java:newrelic-api:7.7.0'
    implementation fileTree(include: ['*.jar'], dir: '../libs')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 jar {
@@ -23,6 +27,9 @@ jar {
   }
 }
 
+test {
+    useJUnitPlatform()
+}
 verifyInstrumentation {
   // Verifier plugin documentation:
   // https://github.com/newrelic/newrelic-gradle-verify-instrumentation

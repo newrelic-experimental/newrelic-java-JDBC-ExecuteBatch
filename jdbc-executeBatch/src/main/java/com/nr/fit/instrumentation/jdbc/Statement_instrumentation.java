@@ -13,6 +13,8 @@ import com.newrelic.api.agent.weaver.NewField;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 
+import static com.nr.fit.instrumentation.jdbc.DBUtils.DEFAULT_COLLECTION_AND_OPERATION;
+
 @Weave(originalName="java.sql.Statement",type=MatchType.Interface)
 public abstract class Statement_instrumentation {
 
@@ -30,7 +32,18 @@ public abstract class Statement_instrumentation {
 		List<String> batchQueries = DBUtils.getBatchQueries(hash);
 		int[] result =  Weaver.callOriginal();
 		int queriesExecuted = result.length; //preparedCount != null && preparedCount > 0 ? preparedCount : batchQueries.size();
-		DatastoreParameters params = DatastoreParameters.product(databaseVendor).collection("Batch").operation("execute").noInstance().noDatabaseName().slowQuery("", new BatchQueryConverter(queriesExecuted)).build();
+		CollectionAndOperation collectionAndOperation = DEFAULT_COLLECTION_AND_OPERATION;
+		if(!batchQueries.isEmpty()) {
+			collectionAndOperation = DBUtils.parse(batchQueries.get(0));
+		}
+		DatastoreParameters params = DatastoreParameters
+				.product(databaseVendor)
+				.collection(collectionAndOperation.getCollection())
+				.operation(collectionAndOperation.getOperation())
+				.noInstance()
+				.noDatabaseName()
+				.slowQuery("", new BatchQueryConverter(queriesExecuted))
+				.build();
 		if(!batchQueries.isEmpty()) {
 			TracedMethod traced = NewRelic.getAgent().getTracedMethod();
 			int count = 1;
