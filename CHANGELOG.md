@@ -1,10 +1,11 @@
 ## Version: [v1.0.1](https://github.com/newrelic-experimental/newrelic-java-JDBC-ExecuteBatch/releases/tag/v1.0.1) | Created: 2023-09-21
+
 ### Bug Fixes
-- Ixed problem when clearParameters is not called
-- Ixes to build
+- Fixed problem when clearParameters is not called
+- Fixes to build
 
 ### Build Upgrades
-- Pdate build.gradle
+- Update build.gradle
 - Updated vendor Id
 - Added  release workflow
 
